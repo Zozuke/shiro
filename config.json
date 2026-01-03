@@ -1,0 +1,15 @@
+{
+    "botName": "Bot Inteligente",
+    "prefix": "!",
+    "admins": ["521xxxxxxxxx@s.whatsapp.net"],
+    "autoReply": true,
+    "similarityThreshold": 0.6,
+    "maxHistory": 100,
+    "welcomeMessage": "¡Hola! Soy un bot inteligente. ¿En qué puedo ayudarte?",
+    "features": {
+        "imageRecognition": false,
+        "voiceNotes": false,
+        "stickerReply": false,
+        "groupCommands": true
+    }
+}
