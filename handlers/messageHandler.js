@@ -1,4 +1,4 @@
-onst fs = require('fs-extra');
+const fs = require('fs-extra');
 const stringSimilarity = require('string-similarity');
 const chalk = require('chalk');
 
