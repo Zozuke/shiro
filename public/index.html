@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración de Respuestas</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --success-color: #2ecc71;
+            --light-color: #ecf0f1;
+            --dark-color: #34495e;
+            --border-color: #bdc3c7;
+            --sidebar-width: 320px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar izquierdo - Variables globales */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px;
+            overflow-y: auto;
+            border-right: 3px solid var(--secondary-color);
+        }
+
+        .sidebar h2 {
+            color: var(--light-color);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--secondary-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .section h3 {
+            margin-bottom: 15px;
+            color: var(--light-color);
+            font-size: 1.2rem;
+        }
+
+        .global-vars-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+        }
+
+        .global-var-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 10px;
+            margin-bottom: 5px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+            border-left: 3px solid var(--secondary-color);
+        }
+
+        .global-var-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .var-name {
+            font-weight: bold;
+        }
+
+        .var-value {
+            font-size: 0.9rem;
+            color: #ddd;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 10px 15px;
+            border-radius: 5px;
+            border: none;
+            margin-bottom: 15px;
+            background-color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* Área principal */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .header h1 {
+            color: var(--primary-color);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #27ae60;
+        }
+
+        .btn-danger {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+
+        /* Formulario de intención */
+        .intent-form {
+            background-color: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--dark-color);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: var(--secondary-color);
+            outline: none;
+        }
+
+        textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .array-input {
+            display: flex;
+            margin-bottom: 8px;
+        }
+
+        .array-input input {
+            flex: 1;
+            margin-right: 10px;
+        }
+
+        .add-item-btn {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            width: 40px;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        .array-items {
+            margin-top: 10px;
+            max-height: 150px;
+            overflow-y: auto;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+        }
+
+        .array-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            background-color: white;
+            border-radius: 4px;
+            margin-bottom: 5px;
+            border-left: 3px solid var(--secondary-color);
+        }
+
+        /* Lista de intenciones */
+        .intents-list {
+            background-color: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .intent-item {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background-color: #fdfdfd;
+            transition: all 0.3s;
+        }
+
+        .intent-item:hover {
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .intent-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .intent-name {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .intent-actions button {
+            margin-left: 10px;
+        }
+
+        .intent-details {
+            margin-top: 15px;
+        }
+
+        .detail-group {
+            margin-bottom: 15px;
+        }
+
+        .detail-label {
+            font-weight: bold;
+            color: var(--dark-color);
+            margin-bottom: 5px;
+        }
+
+        .detail-content {
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+            font-size: 0.95rem;
+        }
+
+        /* Motor de reglas */
+        .rules-engine {
+            background-color: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-top: 30px;
+        }
+
+        .rules-engine h2 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--secondary-color);
+        }
+
+        .rules-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .rule-search {
+            flex: 1;
+        }
+
+        .rule-result {
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            min-height: 100px;
+            border: 1px solid var(--border-color);
+        }
+
+        .json-display {
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .message-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                max-height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar para variables globales -->
+        <aside class="sidebar">
+            <h2>Variables Globales <span id="global-var-count">0</span></h2>
+
+            <div class="section">
+                <h3>Buscar Variable Global</h3>
+                <input type="text" id="search-global-var" class="search-box" placeholder="Escribe el nombre de la variable...">
+
+                <div class="global-vars-list" id="global-vars-list">
+                    <!-- Las variables globales se cargarán aquí -->
+                </div>
+
+                <div class="form-group">
+                    <label>Crear Nueva Variable Global</label>
+                    <div class="array-input">
+                        <input type="text" id="new-global-var-name" class="form-control" placeholder="Nombre de variable">
+                        <input type="text" id="new-global-var-value" class="form-control" placeholder="Valor (separado por comas)">
+                    </div>
+                    <button id="add-global-var" class="btn btn-primary" style="width:100%; margin-top:10px;">Agregar Variable</button>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>Estado del Archivo</h3>
+                <div id="file-status" style="padding: 10px; background: rgba(255,255,255,0.1); border-radius: 5px;">
+                    <p><strong>respuestas.json:</strong> <span id="last-update">No guardado</span></p>
+                    <p id="file-size">Tamaño: 0 KB</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Contenido principal -->
+        <main class="main-content">
+            <header class="header">
+                <h1>Panel de Administración de Respuestas</h1>
+                <div>
+                    <button id="save-json" class="btn btn-success">Guardar respuestas.json</button>
+                    <button id="load-default" class="btn btn-primary">Cargar Datos de Ejemplo</button>
+                    <button id="download-json" class="btn">Descargar JSON</button>
+                </div>
+            </header>
+
+            <div id="message" class="message"></div>
+
+            <!-- Formulario para crear/editar intención -->
+            <section class="intent-form">
+                <h2 id="form-title">Crear Nueva Intención</h2>
+
+                <div class="form-group">
+                    <label for="intent-name">Nombre de la Intención *</label>
+                    <input type="text" id="intent-name" class="form-control" placeholder="Ej: saludo, despedida, ayuda">
+                </div>
+
+                <div class="form-group">
+                    <label for="patterns">Patterns (Frases disparadoras) *</label>
+                    <div class="array-input">
+                        <input type="text" id="new-pattern" class="form-control" placeholder="Escribe una frase y presiona agregar">
+                        <button id="add-pattern" class="add-item-btn">+</button>
+                    </div>
+                    <div class="array-items" id="patterns-list"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="template">Plantilla de Respuesta *</label>
+                    <div class="array-input">
+                        <textarea id="new-template" class="form-control" placeholder="Escribe una plantilla de respuesta y presiona agregar"></textarea>
+                        <button id="add-template" class="add-item-btn">+</button>
+                    </div>
+                    <div class="array-items" id="templates-list"></div>
+                    <small>Puedes usar variables como ${variable} en las plantillas</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="local-vars">Variables Locales (Opcional)</label>
+                    <div class="array-input">
+                        <input type="text" id="new-local-var-name" class="form-control" placeholder="Nombre de variable">
+                        <input type="text" id="new-local-var-value" class="form-control" placeholder="Valor (separado por comas)">
+                        <button id="add-local-var" class="add-item-btn">+</button>
+                    </div>
+                    <div class="array-items" id="local-vars-list"></div>
+                </div>
+
+                <div class="form-group">
+                    <button id="save-intent" class="btn btn-success">Guardar Intención</button>
+                    <button id="cancel-edit" class="btn btn-danger" style="display:none;">Cancelar Edición</button>
+                    <button id="clear-form" class="btn">Limpiar Formulario</button>
+                </div>
+            </section>
+
+            <!-- Lista de intenciones guardadas -->
+            <section class="intents-list">
+                <h2>Intenciones Guardadas <span id="intent-count">0</span></h2>
+                <div id="intents-container">
+                    <!-- Las intenciones se cargarán aquí -->
+                </div>
+            </section>
+
+            <!-- Motor de reglas -->
+            <section class="rules-engine">
+                <h2>Motor de Reglas</h2>
+
+                <div class="rules-controls">
+                    <div class="rule-search">
+                        <label>Buscar Intención por Nombre</label>
+                        <input type="text" id="search-intent" class="form-control" placeholder="Escribe el nombre de la intención...">
+                    </div>
+                    <div>
+                        <label>Probar Variable</label>
+                        <input type="text" id="test-var" class="form-control" placeholder="Escribe el nombre de una variable">
+                    </div>
+                </div>
+
+                <div class="rule-result">
+                    <div id="rule-result-content">
+                        <p>El resultado aparecerá aquí...</p>
+                    </div>
+                </div>
+
+                <div class="footer">
+                    <p>Sistema de Administración de Respuestas Chatbot v1.0 | Actualización en tiempo real de respuestas.json</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Datos iniciales
+        let respuestasData = {
+            "global_vars": {},
+            "intenciones": {}
+        };
+
+        // Estado de la aplicación
+        let currentEditIntent = null;
+        let patterns = [];
+        let templates = [];
+        let localVars = {};
+
+        // Cargar datos iniciales
+        async function loadInitialData() {
+            try {
+                // Intentar cargar desde el archivo respuestas.json
+                const response = await fetch('/load-respuestas');
+                if (response.ok) {
+                    respuestasData = await response.json();
+                    showMessage('Datos cargados desde respuestas.json', 'success');
+                } else {
+                    // Si no existe, cargar desde localStorage
+                    loadFromLocalStorage();
+                }
+            } catch (error) {
+                // Si hay error, cargar desde localStorage
+                loadFromLocalStorage();
+            }
+            updateUI();
+            updateFileStatus();
+        }
+
+        // Cargar datos del localStorage si existen
+        function loadFromLocalStorage() {
+            const savedData = localStorage.getItem('respuestasData');
+            if (savedData) {
+                respuestasData = JSON.parse(savedData);
+                showMessage('Datos cargados desde almacenamiento local', 'success');
+            }
+        }
+
+        // Guardar datos en tiempo real
+        async function saveData() {
+            try {
+                // Guardar en localStorage
+                localStorage.setItem('respuestasData', JSON.stringify(respuestasData));
+
+                // Crear archivo respuestas.json en el servidor
+                await saveToFile();
+
+                // Actualizar estado del archivo
+                updateFileStatus();
+
+                return true;
+            } catch (error) {
+                console.error('Error al guardar:', error);
+                return false;
+            }
+        }
+
+        // Guardar en archivo respuestas.json
+        // Guardar en archivo respuestas.json REAL (backend)
+async function saveToFile() {
+    const response = await fetch('/save-respuestas', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(respuestasData)
+    });
+
+    if (!response.ok) {
+        throw new Error('Error al guardar en el servidor');
+    }
+
+    return true;
+}
+
+        // Actualizar estado del archivo
+        function updateFileStatus() {
+            const dataStr = JSON.stringify(respuestasData);
+            const sizeKB = (new TextEncoder().encode(dataStr).length / 1024).toFixed(2);
+
+            document.getElementById('file-size').textContent = `Tamaño: ${sizeKB} KB`;
+            document.getElementById('last-update').textContent = new Date().toLocaleTimeString();
+
+            // Cambiar color según el estado
+            const statusElement = document.getElementById('last-update');
+            statusElement.style.color = '#2ecc71';
+            statusElement.style.fontWeight = 'bold';
+        }
+
+        // Mostrar mensajes
+        function showMessage(text, type = 'success') {
+            const messageEl = document.getElementById('message');
+            messageEl.textContent = text;
+            messageEl.className = `message message-${type}`;
+            messageEl.style.display = 'block';
+
+            setTimeout(() => {
+                messageEl.style.display = 'none';
+            }, 4000);
+        }
+
+        // Actualizar la interfaz
+        function updateUI() {
+            updateGlobalVars();
+            updateIntentsList();
+            updateCounts();
+        }
+
+        // Actualizar lista de variables locales
+        function updateLocalVarsList() {
+            const container = document.getElementById('local-vars-list');
+            container.innerHTML = Object.entries(localVars).map(([key, value], index) => `
+                <div class="array-item">
+                    <div>
+                        <strong>${key}:</strong> ${Array.isArray(value) ? value.join(', ') : value}
+                    </div>
+                    <button class="btn btn-danger" onclick="removeLocalVar('${key}')">X</button>
+                </div>
+            `).join('');
+        }
+
+        // Eliminar variable local
+        function removeLocalVar(key) {
+            delete localVars[key];
+            updateLocalVarsList();
+        }
+
+        // Guardar intención
+        async function saveIntent() {
+            const intentName = document.getElementById('intent-name').value.trim();
+
+            if (!intentName) {
+                showMessage('El nombre de la intención es requerido', 'error');
+                return;
+            }
+
+            if (patterns.length === 0) {
+                showMessage('Debe agregar al menos un pattern', 'error');
+                return;
+            }
+
+            if (templates.length === 0) {
+                showMessage('Debe agregar al menos una plantilla', 'error');
+                return;
+            }
+
+            const intentData = {
+                patterns: [...patterns],
+                plantilla: [...templates],
+                variables: Object.keys(localVars).length > 0 ? {...localVars} : undefined
+            };
+
+            // Eliminar variables si está vacío
+            if (intentData.variables && Object.keys(intentData.variables).length === 0) {
+                delete intentData.variables;
+            }
+
+            // Si estamos editando, eliminamos la versión anterior
+            if (currentEditIntent && currentEditIntent !== intentName) {
+                delete respuestasData.intenciones[currentEditIntent];
+            }
+
+            // Guardar la intención
+            respuestasData.intenciones[intentName] = intentData;
+
+            // Limpiar formulario
+            clearForm();
+
+            // Guardar en tiempo real
+            await saveData();
+            updateUI();
+            showMessage(`Intención "${intentName}" guardada y archivo actualizado`, 'success');
+        }
+
+        // Editar intención
+        function editIntent(name) {
+            const intent = respuestasData.intenciones[name];
+            if (!intent) return;
+
+            // Configurar formulario para edición
+            document.getElementById('form-title').textContent = `Editando Intención: ${name}`;
+            document.getElementById('intent-name').value = name;
+            document.getElementById('save-intent').textContent = 'Actualizar Intención';
+            document.getElementById('cancel-edit').style.display = 'inline-block';
+
+            // Cargar datos de la intención
+            patterns = [...intent.patterns];
+            templates = [...intent.plantilla];
+            localVars = intent.variables ? {...intent.variables} : {};
+
+            // Actualizar listas
+            updatePatternsList();
+            updateTemplatesList();
+            updateLocalVarsList();
+
+            // Configurar edición actual
+            currentEditIntent = name;
+
+            // Desplazar hacia el formulario
+            document.querySelector('.intent-form').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Eliminar intención
+        async function deleteIntent(name) {
+            if (confirm(`¿Estás seguro de eliminar la intención "${name}"?`)) {
+                delete respuestasData.intenciones[name];
+
+                // Guardar en tiempo real
+                await saveData();
+                updateUI();
+                showMessage(`Intención "${name}" eliminada y archivo actualizado`, 'success');
+            }
+        }
+
+        // Cancelar edición
+        function cancelEdit() {
+            clearForm();
+            showMessage('Edición cancelada', 'success');
+        }
+
+        // Limpiar formulario
+        function clearForm() {
+            document.getElementById('form-title').textContent = 'Crear Nueva Intención';
+            document.getElementById('intent-name').value = '';
+            document.getElementById('save-intent').textContent = 'Guardar Intención';
+            document.getElementById('cancel-edit').style.display = 'none';
+
+            patterns = [];
+            templates = [];
+            localVars = {};
+
+            updatePatternsList();
+            updateTemplatesList();
+            updateLocalVarsList();
+
+            currentEditIntent = null;
+        }
+
+        // Generar y descargar JSON
+        function downloadJSON() {
+            const dataStr = JSON.stringify(respuestasData, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+
+            // Crear enlace para descargar
+            const downloadLink = document.createElement('a');
+            downloadLink.download = 'respuestas.json';
+            downloadLink.href = window.URL.createObjectURL(dataBlob);
+            downloadLink.click();
+
+            showMessage('Archivo respuestas.json descargado', 'success');
+        }
+
+        // Guardar JSON (versión para botón)
+        async function saveJSON() {
+            const success = await saveData();
+            if (success) {
+                showMessage('Archivo respuestas.json guardado exitosamente', 'success');
+            } else {
+                showMessage('Error al guardar el archivo', 'error');
+            }
+        }
+
+        // Probar motor de reglas
+        function testRule() {
+            const intentName = document.getElementById('search-intent').value.trim();
+            const varName = document.getElementById('test-var').value.trim();
+            const resultContainer = document.getElementById('rule-result-content');
+
+            if (intentName && respuestasData.intenciones[intentName]) {
+                const intent = respuestasData.intenciones[intentName];
+                resultContainer.innerHTML = `
+                    <h3>Intención: ${intentName}</h3>
+                    <p><strong>Patterns:</strong> ${intent.patterns.join(', ')}</p>
+                    <p><strong>Plantillas:</strong></p>
+                    <ul>${intent.plantilla.map(p => `<li>${p}</li>`).join('')}</ul>
+                    ${intent.variables ? `<p><strong>Variables Locales:</strong> ${JSON.stringify(intent.variables)}</p>` : ''}
+                `;
+            } else if (varName && respuestasData.global_vars[varName]) {
+                resultContainer.innerHTML = `
+                    <h3>Variable Global: ${varName}</h3>
+                    <p><strong>Valor:</strong> ${JSON.stringify(respuestasData.global_vars[varName])}</p>
+                `;
+            } else {
+                resultContainer.innerHTML = '<p>No se encontraron resultados para la búsqueda.</p>';
+            }
+        }
+
+        // Cargar datos de ejemplo
+        async function loadExampleData() {
+            if (confirm('¿Cargar datos de ejemplo? Esto reemplazará los datos actuales.')) {
+                // Datos de ejemplo
+                respuestasData = {
+                    "global_vars": {
+                        "saludos": ["Hola", "Buenas", "Saludos", "Qué tal"],
+                        "emojiSaludo": ["👋", "😊", "🙂", "🤖"],
+                        "soy": ["Soy", "Mi nombre es", "Me llamo", "Yo soy"],
+                        "nombreBot": ["Asistente Virtual", "Bot de Ayuda", "Asistente IA"],
+                        "dispocision": ["¿En qué puedo ayudarte?", "¿Cómo estás hoy?", "Estoy aquí para asistirte"],
+                        "asistencia": ["¿Necesitas ayuda con algo?", "¿En qué te puedo colaborar?", "Cuéntame, ¿qué necesitas?"]
+                    },
+                    "intenciones": {
+                        "saludo": {
+                            "patterns": ["hola", "buenas", "que onda", "saludos", "ola", "holi", "qué tal"],
+                            "plantilla": [
+                                "${saludos}${emojiSaludo}, ${soy} ${nombreBot}. ${dispocision}",
+                                "${saludos}, ${soy} ${nombreBot} listo para ayudarte ${emojiSaludo}",
+                                "${saludos}${emojiSaludo}, ${soy} ${nombreBot}. ${dispocision}",
+                                "${saludos}${emojiSaludo}, ${soy} ${nombreBot}. ${asistencia}"
+                            ],
+                            "variables": {
+                                "extra": ["amiga", "compa", "cliente"]
+                            }
+                        },
+                        "despedida": {
+                            "patterns": ["adiós", "chao", "hasta luego", "nos vemos", "bye", "hasta pronto"],
+                            "plantilla": [
+                                "¡Hasta luego! Que tengas un buen día ${extra} 👋",
+                                "¡Adiós! Espero haberte ayudado ${emojiSaludo}",
+                                "Nos vemos pronto, cuídate ${extra}",
+                                "Hasta la próxima, ${extra}. ¡Que estés bien!"
+                            ],
+                            "variables": {
+                                "extra": ["amigo", "compañero", "usuario"]
+                            }
+                        }
+                    }
+                };
+
+                // Guardar en tiempo real
+                await saveData();
+                updateUI();
+                clearForm();
+                showMessage('Datos de ejemplo cargados y archivo actualizado', 'success');
+            }
+        }
+
+        // Inicializar eventos
+        function initEvents() {
+            // Variables globales
+            document.getElementById('add-global-var').addEventListener('click', addGlobalVar);
+            document.getElementById('search-global-var').addEventListener('input', updateGlobalVars);
+
+            // Patterns
+            document.getElementById('add-pattern').addEventListener('click', addPattern);
+            document.getElementById('new-pattern').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') addPattern();
+            });
+
+            // Plantillas
+            document.getElementById('add-template').addEventListener('click', addTemplate);
+
+            // Variables locales
+            document.getElementById('add-local-var').addEventListener('click', addLocalVar);
+
+            // Intenciones
+            document.getElementById('save-intent').addEventListener('click', saveIntent);
+            document.getElementById('cancel-edit').addEventListener('click', cancelEdit);
+            document.getElementById('clear-form').addEventListener('click', clearForm);
+
+            // JSON y datos
+            document.getElementById('save-json').addEventListener('click', saveJSON);
+            document.getElementById('download-json').addEventListener('click', downloadJSON);
+            document.getElementById('load-default').addEventListener('click', loadExampleData);
+
+            // Motor de reglas
+            document.getElementById('search-intent').addEventListener('input', () => {
+                updateIntentsList();
+                testRule();
+            });
+            document.getElementById('test-var').addEventListener('input', testRule);
+        }
+
+        // Inicializar aplicación
+        async function init() {
+            await loadInitialData();
+            initEvents();
+            updateUI();
+        }
+
+        // Hacer funciones disponibles globalmente
+        window.addGlobalVar = addGlobalVar;
+        window.deleteGlobalVar = deleteGlobalVar;
+        window.addPattern = addPattern;
+        window.removePattern = removePattern;
+        window.addTemplate = addTemplate;
+        window.removeTemplate = removeTemplate;
+        window.addLocalVar = addLocalVar;
+        window.removeLocalVar = removeLocalVar;
+        window.saveIntent = saveIntent;
+        window.editIntent = editIntent;
+        window.deleteIntent = deleteIntent;
+        window.cancelEdit = cancelEdit;
+        window.clearForm = clearForm;
+        window.saveJSON = saveJSON;
+        window.downloadJSON = downloadJSON;
+        window.loadExampleData = loadExampleData;
+        window.testRule = testRule;
+
+        // Iniciar cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
