@@ -17,29 +17,29 @@ Actualizar Termux y preparar el entorno:
 pkg update && pkg upgrade -y
 pkg install git nodejs -y
 
-# Clonar el repositorio:
+## Clonar el repositorio:
 
 git clone https://github.com/Zozuke/shiro.git
 cd shiro
 
-Dar permisos al instalador:
+## Dar permisos al instalador:
 
 chmod +x setup.sh
 
-Ejecutar la instalación:
+## Ejecutar la instalación:
 
 ./setup.sh
 
-Abrir el panel de administración:
+## Abrir el panel de administración:
 
 node admin.js
 
-Iniciar el bot de WhatsApp:
+## Iniciar el bot de WhatsApp:
 
 node bot.js
 
-Escanea el código QR cuando aparezca para vincular WhatsApp.
-
+## Escanea el código QR cuando aparezca para vincular WhatsApp.
+```
 Notas
 
 Todo funciona localmente en Termux
