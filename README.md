@@ -17,7 +17,7 @@ Actualizar Termux y preparar el entorno:
 pkg update && pkg upgrade -y
 pkg install git nodejs -y
 
-Clonar el repositorio:
+# Clonar el repositorio:
 
 git clone https://github.com/Zozuke/shiro.git
 cd shiro
