@@ -55,7 +55,7 @@ Uso educativo y personal
 Uso educativo y personal.
 El autor no se hace responsable del mal uso.
 
-ayúdame a seguir dándole mantenimiento a este programa asiendome una pequeña colaboración al número:
+## ayúdame a seguir dándole mantenimiento a este programa asiendome una pequeña colaboración al número:
 
 ```bash
 +52 221 986 1564
