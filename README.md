@@ -1,5 +1,3 @@
-Aquí está EN UN SOLO README, TODO JUNTO, para copiar y pegar. Nada más.
-
 # Shiro Bot – Instalación en Termux
 
 Bot de WhatsApp con panel de administración ejecutado completamente en Termux.
@@ -42,7 +40,7 @@ node bot.js
 ```
 Notas
 
-Todo funciona localmente en Termux
+Todo el panel funciona localmente en Termux
 
 No usa servidores externos
 
@@ -54,6 +52,13 @@ No cierres Termux mientras el bot esté activo
 Licencia
 
 Uso educativo y personal
+Uso educativo y personal.
+El autor no se hace responsable del mal uso.
 
-Ya.  
-Eso **ES** un solo README. Copia, pega y se acabó.# shiro
+ayúdame a seguir dándole mantenimiento a este programa asiendome una pequeña colaboración al número:
+
+```bash
++52 221 986 1564
+```
+
+te lo agradecería mucho 
